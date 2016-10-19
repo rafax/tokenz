@@ -28,3 +28,7 @@ func (b base64Handler) Decrypt(t Token) (SubscriptionData, error) {
 	}
 	return v, nil
 }
+
+func NewBase64Handler() TokenHandler {
+	return base64Handler{}
+}

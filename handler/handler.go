@@ -25,7 +25,3 @@ type TokenHandler interface {
 	Encrypt(SubscriptionData) (Token, error)
 	Decrypt(Token) (SubscriptionData, error)
 }
-
-func NewBase64Handler() TokenHandler {
-	return base64Handler{}
-}

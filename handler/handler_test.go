@@ -25,6 +25,6 @@ func testHandler(t *testing.T, h TokenHandler) {
 		t.Errorf("Decrypt failed %v", err)
 	}
 	if sd != expected {
-		t.Error("%v != %v, they should be equal", sd, expected)
+		t.Errorf("%s != %s, they should be equal", sd, expected)
 	}
 }

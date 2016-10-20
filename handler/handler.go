@@ -9,6 +9,10 @@ type SubscriptionData struct {
 	Platform  string
 }
 
+func (sd SubscriptionData) Equal(u SubscriptionData) bool {
+	return sd.UserId == u.UserId && sd.ExpiresAt.Equal(u.ExpiresAt) && sd.Level == u.Level && sd.Platform == u.Platform
+}
+
 type Token interface {
 	String() string
 }

@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	h handler.TokenHandler = handler.NewBase64Handler()
+	h handler.TokenHandler 
 )
 
 func Decode(ctx *fasthttp.RequestCtx, ps fasthttprouter.Params) {
@@ -37,6 +37,8 @@ func Encode(ctx *fasthttp.RequestCtx, ps fasthttprouter.Params) {
 }
 
 func main() {
+	h = handler.NewBase64Handler()
+
 	router := fasthttprouter.New()
 	router.POST("/b64/:userId/:valid_seconds/:level/:platform", Encode)
 	router.GET("/b64/:token", Decode)

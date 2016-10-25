@@ -13,18 +13,27 @@ import (
 )
 
 var (
-	h handler.TokenHandler 
+	h handler.TokenHandler
 )
 
-func Decode(ctx *fasthttp.RequestCtx, ps fasthttprouter.Params) {
+func decode(ctx *fasthttp.RequestCtx, ps fasthttprouter.Params) {
 	t := ps.ByName("token")
-	sd, _ := h.Decrypt(handler.StringToken{Token: t})
-	j, _ := json.Marshal(sd)
+	sd, err := h.Decrypt(handler.StringToken{Token: t})
+	if err != nil {
+		ctx.Error(fmt.Sprintf("Error when decrypting token: %s", err), 500)
+	}
+	j, err := json.Marshal(sd)
+	if err != nil {
+		ctx.Error(fmt.Sprintf("Error when marshalling response: %s", err), 500)
+	}
 	fmt.Fprint(ctx, string(j))
 }
 
-func Encode(ctx *fasthttp.RequestCtx, ps fasthttprouter.Params) {
-	validForSeconds, _ := strconv.Atoi(ps.ByName("valid_seconds"))
+func encode(ctx *fasthttp.RequestCtx, ps fasthttprouter.Params) {
+	validForSeconds, err := strconv.Atoi(ps.ByName("valid_seconds"))
+	if err != nil {
+		ctx.Error(fmt.Sprintf("Error when parsing valid_seconds: %s", err), 500)
+	}
 	sd := handler.SubscriptionData{
 		ExpiresAt: time.Now().Add(time.Second * time.Duration(validForSeconds)),
 		UserId:    ps.ByName("userId"),
@@ -32,7 +41,10 @@ func Encode(ctx *fasthttp.RequestCtx, ps fasthttprouter.Params) {
 		Level:     ps.ByName("level"),
 	}
 	log.Println(sd)
-	t, _ := h.Encrypt(sd)
+	t, err := h.Encrypt(sd)
+	if err != nil {
+		ctx.Error(fmt.Sprintf("Error when encrypting to token: %s", err), 500)
+	}
 	fmt.Fprintf(ctx, "{\"token\": %s}", t.String())
 }
 
@@ -40,8 +52,8 @@ func main() {
 	h = handler.NewBase64Handler()
 
 	router := fasthttprouter.New()
-	router.POST("/b64/:userId/:valid_seconds/:level/:platform", Encode)
-	router.GET("/b64/:token", Decode)
+	router.POST("/b64/:userId/:valid_seconds/:level/:platform", encode)
+	router.GET("/b64/:token", decode)
 
 	log.Fatal(fasthttp.ListenAndServe(":8080", router.Handler))
 }

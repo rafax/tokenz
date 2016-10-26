@@ -16,8 +16,8 @@ var (
 	h handler.TokenHandler
 )
 
-func decode(ctx *fasthttp.RequestCtx, ps fasthttprouter.Params) {
-	t := ps.ByName("token")
+func decode(ctx *fasthttp.RequestCtx) {
+	t := ctx.UserValue("token").(string)
 	sd, err := h.Decrypt(handler.StringToken{Token: t})
 	if err != nil {
 		ctx.Error(fmt.Sprintf("Error when decrypting token: %s", err), 500)
@@ -29,16 +29,16 @@ func decode(ctx *fasthttp.RequestCtx, ps fasthttprouter.Params) {
 	fmt.Fprint(ctx, string(j))
 }
 
-func encode(ctx *fasthttp.RequestCtx, ps fasthttprouter.Params) {
-	validForSeconds, err := strconv.Atoi(ps.ByName("valid_seconds"))
+func encode(ctx *fasthttp.RequestCtx) {
+	validForSeconds, err := strconv.Atoi(ctx.UserValue("valid_seconds").(string))
 	if err != nil {
 		ctx.Error(fmt.Sprintf("Error when parsing valid_seconds: %s", err), 500)
 	}
 	sd := handler.SubscriptionData{
 		ExpiresAt: time.Now().Add(time.Second * time.Duration(validForSeconds)),
-		UserId:    ps.ByName("userId"),
-		Platform:  ps.ByName("platform"),
-		Level:     ps.ByName("level"),
+		UserId:    ctx.UserValue("userId").(string),
+		Platform:  ctx.UserValue("platform").(string),
+		Level:     ctx.UserValue("level").(string),
 	}
 	log.Println(sd)
 	t, err := h.Encrypt(sd)

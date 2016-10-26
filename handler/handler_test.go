@@ -7,6 +7,11 @@ import (
 
 func TestBase64(t *testing.T) {
 	testHandler(t, NewBase64Handler())
+
+}
+
+func TestMemory(t *testing.T) {
+	testHandler(t, NewMemoryHandler())
 }
 
 func testHandler(t *testing.T, h TokenHandler) {

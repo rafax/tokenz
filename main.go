@@ -13,7 +13,8 @@ import (
 )
 
 var (
-	h handler.TokenHandler
+	h      handler.TokenHandler
+	bindTo string = ":8080"
 )
 
 func decode(ctx *fasthttp.RequestCtx) {
@@ -45,7 +46,7 @@ func encode(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Error(fmt.Sprintf("Error when encrypting to token: %s", err), 500)
 	}
-	fmt.Fprintf(ctx, "{\"token\": %s}", t.String())
+	fmt.Fprintf(ctx, "{\"token\": \"%s\"}", t.String())
 }
 
 func main() {
@@ -55,5 +56,7 @@ func main() {
 	router.POST("/b64/:userId/:valid_seconds/:level/:platform", encode)
 	router.GET("/b64/:token", decode)
 
-	log.Fatal(fasthttp.ListenAndServe(":8080", router.Handler))
+	fmt.Printf("Listening on %s\n", bindTo)
+
+	log.Fatal(fasthttp.ListenAndServe(bindTo, router.Handler))
 }

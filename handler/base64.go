@@ -23,12 +23,9 @@ func (b base64Handler) Decrypt(t Token) (SubscriptionData, error) {
 		return v, err
 	}
 	err = json.Unmarshal(s, &v)
-	if err != nil {
-		return v, err
-	}
-	return v, nil
+	return v, err
 }
 
-func NewBase64Handler() TokenHandler {
+func NewBase64Handler() base64Handler {
 	return base64Handler{}
 }

@@ -24,10 +24,12 @@ func decode(h handler.TokenHandler) fasthttp.RequestHandler {
 		sd, err := h.Decrypt(handler.StringToken{Token: t})
 		if err != nil {
 			ctx.Error(fmt.Sprintf("Error when decrypting token: %s", err), 500)
+			return
 		}
 		j, err := json.Marshal(sd)
 		if err != nil {
 			ctx.Error(fmt.Sprintf("Error when marshalling response: %s", err), 500)
+			return
 		}
 		fmt.Fprint(ctx, string(j))
 	}
@@ -38,6 +40,7 @@ func encode(h handler.TokenHandler) fasthttp.RequestHandler {
 		validForSeconds, err := strconv.Atoi(ctx.UserValue("valid_seconds").(string))
 		if err != nil {
 			ctx.Error(fmt.Sprintf("Error when parsing valid_seconds: %s", err), 500)
+			return
 		}
 		sd := handler.SubscriptionData{
 			ExpiresAt: time.Now().Add(time.Second * time.Duration(validForSeconds)),
@@ -49,6 +52,7 @@ func encode(h handler.TokenHandler) fasthttp.RequestHandler {
 		t, err := h.Encrypt(sd)
 		if err != nil {
 			ctx.Error(fmt.Sprintf("Error when encrypting to token: %s", err), 500)
+			return
 		}
 		fmt.Fprintf(ctx, "{\"token\": \"%s\"}", t.String())
 	}

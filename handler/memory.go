@@ -19,7 +19,7 @@ func (h *MemoryHandler) Encrypt(sd SubscriptionData) (Token, error) {
 func (h *MemoryHandler) Decrypt(t Token) (SubscriptionData, error) {
 	sd, ok := h.data[t]
 	if !ok {
-		return SubscriptionData{}, errors.New("Token invalid")
+		return SubscriptionData{}, errors.New("No subscription found for token")
 	}
 	return sd, nil
 }

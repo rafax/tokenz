@@ -17,8 +17,8 @@ func (b base64Handler) Encrypt(sd SubscriptionData) (Token, error) {
 }
 
 func (b base64Handler) Decrypt(t Token) (SubscriptionData, error) {
-	s, err := base64.StdEncoding.DecodeString(t.String())
 	var v SubscriptionData
+	s, err := base64.StdEncoding.DecodeString(t.String())
 	if err != nil {
 		return v, err
 	}

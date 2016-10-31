@@ -2,22 +2,24 @@ package token
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/satori/go.uuid"
 )
 
 type MemoryHandler struct {
-	data map[Token]SubscriptionData
+	data map[string]SubscriptionData
 }
 
 func (h *MemoryHandler) Encrypt(sd SubscriptionData) (Token, error) {
 	token := uuid.NewV4()
-	h.data[token] = sd
+	h.data[token.String()] = sd
 	return token, nil
 }
 
 func (h *MemoryHandler) Decrypt(t Token) (SubscriptionData, error) {
-	sd, ok := h.data[t]
+	fmt.Printf("Looking for %v in %v", t, h.data)
+	sd, ok := h.data[t.String()]
 	if !ok {
 		return SubscriptionData{}, errors.New("Token invalid")
 	}
@@ -25,5 +27,5 @@ func (h *MemoryHandler) Decrypt(t Token) (SubscriptionData, error) {
 }
 
 func NewMemoryHandler() *MemoryHandler {
-	return &MemoryHandler{data: make(map[Token]SubscriptionData)}
+	return &MemoryHandler{data: make(map[string]SubscriptionData)}
 }

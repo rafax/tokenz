@@ -1,4 +1,4 @@
-package handler
+package token
 
 import (
 	"encoding/base64"
@@ -17,18 +17,15 @@ func (b base64Handler) Encrypt(sd SubscriptionData) (Token, error) {
 }
 
 func (b base64Handler) Decrypt(t Token) (SubscriptionData, error) {
-	s, err := base64.StdEncoding.DecodeString(t.String())
 	var v SubscriptionData
+	s, err := base64.StdEncoding.DecodeString(t.String())
 	if err != nil {
 		return v, err
 	}
 	err = json.Unmarshal(s, &v)
-	if err != nil {
-		return v, err
-	}
-	return v, nil
+	return v, err
 }
 
-func NewBase64Handler() TokenHandler {
+func NewBase64Handler() base64Handler {
 	return base64Handler{}
 }

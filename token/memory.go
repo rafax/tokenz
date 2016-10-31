@@ -2,7 +2,6 @@ package token
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/satori/go.uuid"
 )
@@ -18,7 +17,6 @@ func (h *MemoryHandler) Encrypt(sd SubscriptionData) (Token, error) {
 }
 
 func (h *MemoryHandler) Decrypt(t Token) (SubscriptionData, error) {
-	fmt.Printf("Looking for %v in %v", t, h.data)
 	sd, ok := h.data[t.String()]
 	if !ok {
 		return SubscriptionData{}, errors.New("No subscription found for token")

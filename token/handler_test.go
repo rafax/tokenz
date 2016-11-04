@@ -13,6 +13,10 @@ func TestMemory(t *testing.T) {
 	testHandler(t, NewMemoryHandler())
 }
 
+func TestRedis(t *testing.T) {
+	testHandler(t, NewRedisHandler())
+}
+
 func testHandler(t *testing.T, h Handler) {
 	expected := SubscriptionData{
 		UserId:    "uid",

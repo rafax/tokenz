@@ -13,9 +13,9 @@ func TestMemory(t *testing.T) {
 	testHandler(t, NewMemoryHandler())
 }
 
-// func TestRedis(t *testing.T) {
-// 	testHandler(t, NewRedisHandler())
-// }
+func TestRedis(t *testing.T) {
+	testHandler(t, newRedisHandler(&memRedisStore{data: make(map[string][]byte)}))
+}
 
 func testHandler(t *testing.T, h Handler) {
 	expected := SubscriptionData{
@@ -35,4 +35,17 @@ func testHandler(t *testing.T, h Handler) {
 	if !sd.Equal(expected) {
 		t.Errorf("%v != %v, they should be equal", sd, expected)
 	}
+}
+
+type memRedisStore struct {
+	data map[string][]byte
+}
+
+func (m *memRedisStore) Set(key string, value []byte) error {
+	m.data[key] = value
+	return nil
+}
+
+func (m *memRedisStore) Get(key string) ([]byte, error) {
+	return m.data[key], nil
 }

@@ -10,7 +10,7 @@ var (
 )
 
 func main() {
-	handlers := map[string]token.Handler{"b64": token.NewBase64Handler(), "mem": token.NewMemoryHandler()}
+	handlers := map[string]token.Handler{"b64": token.NewBase64Handler(), "mem": token.NewMemoryHandler(), "red": token.NewRedisHandler()}
 	s := server.NewServer(bindTo, handlers)
 	s.Start()
 }

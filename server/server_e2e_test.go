@@ -15,12 +15,12 @@ import (
 const userID string = "userid"
 
 func TestRoundtrip(t *testing.T) {
-	s := NewServer(":8888", map[string]token.Handler{"b64": token.NewBase64Handler(), "mem": token.NewMemoryHandler()})
+	s := NewServer(":8888", map[string]token.Handler{"b64": token.NewBase64Handler(), "mem": token.NewMemoryHandler(), "red": token.NewRedisHandler()})
 	go s.Start()
 	var token *string
 	t.Run("Test memory", handlerTest("mem", token))
 	t.Run("Test base64", handlerTest("b64", token))
-	//t.Run("Test redis", handlerTest("redis", token))
+	t.Run("Test redis", handlerTest("red", token))
 }
 
 func handlerTest(method string, token *string) func(t *testing.T) {

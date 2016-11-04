@@ -13,7 +13,7 @@ func TestMemory(t *testing.T) {
 	testHandler(t, NewMemoryHandler())
 }
 
-func testHandler(t *testing.T, h TokenHandler) {
+func testHandler(t *testing.T, h Handler) {
 	expected := SubscriptionData{
 		UserId:    "uid",
 		ExpiresAt: time.Now().Add(time.Second),

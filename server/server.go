@@ -17,7 +17,7 @@ type Server struct {
 	router *fasthttprouter.Router
 }
 
-func NewServer(b64Handler, memHandler token.TokenHandler, bindTo string) *Server {
+func NewServer(b64Handler, memHandler token.Handler, bindTo string) *Server {
 	router := fasthttprouter.New()
 	router.POST("/b64/:userId/:valid_seconds/:level/:platform", encode(b64Handler))
 	router.GET("/b64/:token", decode(b64Handler))
@@ -32,7 +32,7 @@ func (s *Server) Start() {
 	log.Fatal(fasthttp.ListenAndServe(s.bindTo, s.router.Handler))
 }
 
-func decode(h token.TokenHandler) fasthttp.RequestHandler {
+func decode(h token.Handler) fasthttp.RequestHandler {
 	return func(ctx *fasthttp.RequestCtx) {
 		t := ctx.UserValue("token").(string)
 		sd, err := h.Decrypt(token.StringToken{Token: t})
@@ -49,7 +49,7 @@ func decode(h token.TokenHandler) fasthttp.RequestHandler {
 	}
 }
 
-func encode(h token.TokenHandler) fasthttp.RequestHandler {
+func encode(h token.Handler) fasthttp.RequestHandler {
 	return func(ctx *fasthttp.RequestCtx) {
 		validForSeconds, err := strconv.Atoi(ctx.UserValue("valid_seconds").(string))
 		if err != nil {

@@ -13,7 +13,11 @@ func TestMemory(t *testing.T) {
 	testHandler(t, NewMemoryHandler())
 }
 
-func testHandler(t *testing.T, h TokenHandler) {
+func TestRedis(t *testing.T) {
+	testHandler(t, newRedisHandler(&memRedisStore{data: make(map[string][]byte)}))
+}
+
+func testHandler(t *testing.T, h Handler) {
 	expected := SubscriptionData{
 		UserId:    "uid",
 		ExpiresAt: time.Now().Add(time.Second),
@@ -31,4 +35,17 @@ func testHandler(t *testing.T, h TokenHandler) {
 	if !sd.Equal(expected) {
 		t.Errorf("%v != %v, they should be equal", sd, expected)
 	}
+}
+
+type memRedisStore struct {
+	data map[string][]byte
+}
+
+func (m *memRedisStore) Set(key string, value []byte) error {
+	m.data[key] = value
+	return nil
+}
+
+func (m *memRedisStore) Get(key string) ([]byte, error) {
+	return m.data[key], nil
 }

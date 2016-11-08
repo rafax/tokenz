@@ -30,8 +30,8 @@ func (s StringToken) String() string {
 	return s.Token
 }
 
-// TokenHandler converts between SuscriptionData and Token
-type TokenHandler interface {
+// Handler converts between SuscriptionData and Token
+type Handler interface {
 	Encrypt(SubscriptionData) (Token, error)
 	Decrypt(Token) (SubscriptionData, error)
 }

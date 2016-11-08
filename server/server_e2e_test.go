@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"testing"
-	"time"
 
 	"github.com/Jeffail/gabs"
 	"github.com/rafax/tokenz/token"
@@ -18,7 +17,6 @@ const userID string = "userid"
 func TestRoundtrip(t *testing.T) {
 	s := NewServer(":8888", map[string]token.Handler{"b64": token.NewBase64Handler(), "mem": token.NewMemoryHandler(), "red": token.NewRedisHandler()})
 	go s.Start()
-	time.Sleep(1) // let the server start
 	var token *string
 	t.Run("Test memory", handlerTest("mem", token))
 	t.Run("Test base64", handlerTest("b64", token))

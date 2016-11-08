@@ -19,6 +19,9 @@ type Server struct {
 
 func NewServer(bindTo string, handlers map[string]token.Handler) *Server {
 	router := fasthttprouter.New()
+	router.GET("/statusz", func(ctx *fasthttp.RequestCtx) {
+		fmt.Fprint(ctx, "OK")
+	})
 	for k, h := range handlers {
 		router.POST(fmt.Sprintf("/%v/:userId/:valid_seconds/:level/:platform", k), encode(h))
 		router.GET(fmt.Sprintf("/%v/:token", k), decode(h))

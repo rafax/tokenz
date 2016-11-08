@@ -16,12 +16,13 @@ import (
 const userID string = "userid"
 
 func TestRoundtrip(t *testing.T) {
+	bindTo := ":8888"
 	s := NewServer(":8888", map[string]token.Handler{"b64": token.NewBase64Handler(), "mem": token.NewMemoryHandler(), "red": token.NewRedisHandler()})
 	go s.Start()
-	time.Sleep(10) // let the server start
-	t.Run("Test memory", handlerTest("mem"))
+	verifyStarted("http://" + bindTo)
 	t.Run("Test base64", handlerTest("b64"))
 	t.Run("Test redis", handlerTest("red"))
+	t.Run("Test memory", handlerTest("mem"))
 }
 
 func handlerTest(method string) func(t *testing.T) {
@@ -78,4 +79,17 @@ func getJSON(resp *http.Response, err error, t *testing.T) (*gabs.Container, err
 		return nil, err
 	}
 	return data, nil
+}
+
+func verifyStarted(bindTo string) {
+	delay := 1 * time.Nanosecond
+	for i := 0; i < 10; i++ {
+		_, err := http.Get(bindTo)
+		if err == nil {
+			return
+		}
+		fmt.Println(err)
+		delay = 10 * delay
+		time.Sleep(delay)
+	}
 }

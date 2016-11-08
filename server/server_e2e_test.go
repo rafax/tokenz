@@ -17,13 +17,13 @@ const userID string = "userid"
 func TestRoundtrip(t *testing.T) {
 	s := NewServer(":8888", map[string]token.Handler{"b64": token.NewBase64Handler(), "mem": token.NewMemoryHandler(), "red": token.NewRedisHandler()})
 	go s.Start()
-	var token *string
-	t.Run("Test memory", handlerTest("mem", token))
-	t.Run("Test base64", handlerTest("b64", token))
-	t.Run("Test redis", handlerTest("red", token))
+	t.Run("Test memory", handlerTest("mem"))
+	t.Run("Test base64", handlerTest("b64"))
+	t.Run("Test redis", handlerTest("red"))
 }
 
-func handlerTest(method string, token *string) func(t *testing.T) {
+func handlerTest(method string) func(t *testing.T) {
+	var token *string
 	return func(t *testing.T) {
 		t.Run("Fetch token", func(t *testing.T) {
 			resp, err := http.Post(fmt.Sprintf("http://:8888/%v/%v/1000/all/mobilez", method, userID), "application/json", nil)

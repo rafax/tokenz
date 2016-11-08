@@ -39,6 +39,10 @@ func handlerTest(method string) func(t *testing.T) {
 			}
 			token = &tkn
 		})
+		if token == nil {
+			t.Error("Cannot verify data, token is nil")
+			return
+		}
 		t.Run("Fetch data for token", func(t *testing.T) {
 			resp, err := http.Get(fmt.Sprintf("http://:8888/%v/%v", method, *token))
 			data, err := getJSON(resp, err, t)

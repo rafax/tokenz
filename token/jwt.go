@@ -17,19 +17,23 @@ type payload struct {
 }
 
 func (h *JwtAssymetricHandler) Encrypt(sd SubscriptionData) (Token, error) {
-	jwt.NewWithClaims(jwt.SigningMethodHS256, payload{Data: sd})
-	ss, err := token.SignedString(mySigningKey)
+	ss, err := jwt.NewWithClaims(jwt.SigningMethodHS256, payload{Data: sd}).SignedString(mySigningKey)
 	return StringToken{Token: ss}, err
 }
 
 func (h *JwtAssymetricHandler) Decrypt(t Token) (SubscriptionData, error) {
-	sd, ok := h.data[t.String()]
-	if !ok {
-		return SubscriptionData{}, errors.New("No subscription found for token")
+	token, err := jwt.ParseWithClaims(t.String(), &payload{}, func(t *jwt.Token) (interface{}, error) {
+		return mySigningKey, nil
+	})
+	if err != nil {
+		return SubscriptionData{}, err
 	}
-	return sd, nil
+	if !token.Valid {
+		return SubscriptionData{}, errors.New("Invalid token")
+	}
+	return token.Claims.(*payload).Data, nil
 }
 
-func NewMemoryHandler() *JwtAssymetricHandler {
-	return &JwtAssymetricHandler{data: make(map[string]SubscriptionData)}
+func NewJwtAssymetricHandler() *JwtAssymetricHandler {
+	return &JwtAssymetricHandler{}
 }

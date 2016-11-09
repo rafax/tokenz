@@ -17,6 +17,10 @@ func TestRedis(t *testing.T) {
 	testHandler(t, newRedisHandler(&memRedisStore{data: make(map[string][]byte)}))
 }
 
+func TestJwtAssymetricHandler(t *testing.T) {
+	testHandler(t, NewJwtAssymetricHandler())
+}
+
 func testHandler(t *testing.T, h Handler) {
 	expected := SubscriptionData{
 		UserId:    "uid",

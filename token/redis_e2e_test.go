@@ -10,7 +10,7 @@ import (
 	redis "gopkg.in/redis.v5"
 )
 
-func TestRedisStore(t *testing.T) {
+func TestSetAndGet(t *testing.T) {
 	k, v := uuid.NewV4().String(), []byte(uuid.NewV4().String())
 	s := &redisStore{client: redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
@@ -27,5 +27,17 @@ func TestRedisStore(t *testing.T) {
 	}
 	if string(got) != string(v) {
 		t.Errorf("Got %v, expected %v", got, v)
+	}
+}
+
+func TestGetOfNonExistentKey(t *testing.T) {
+	s := &redisStore{client: redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       0,
+	})}
+	_, err := s.Get("notexistent")
+	if err == nil {
+		t.Errorf("Expected an error, got %v", err)
 	}
 }

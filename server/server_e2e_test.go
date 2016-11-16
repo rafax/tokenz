@@ -17,12 +17,13 @@ const userID string = "userid"
 
 func TestRoundtrip(t *testing.T) {
 	bindTo := ":8888"
-	s := NewServer(":8888", map[string]token.Handler{"b64": token.NewBase64Handler(), "mem": token.NewMemoryHandler(), "red": token.NewRedisHandler()})
+	s := NewServer(":8888", map[string]token.Handler{"b64": token.NewBase64Handler(), "mem": token.NewMemoryHandler(), "red": token.NewRedisHandler(), "ajw": token.NewJwtAssymetricHandler()})
 	go s.Start()
 	verifyStarted("http://" + bindTo)
 	t.Run("Test base64", handlerTest("b64"))
 	t.Run("Test redis", handlerTest("red"))
 	t.Run("Test memory", handlerTest("mem"))
+	t.Run("Test assymetric jwt", handlerTest("ajw"))
 }
 
 func handlerTest(method string) func(t *testing.T) {
